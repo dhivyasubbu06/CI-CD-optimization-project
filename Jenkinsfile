@@ -8,13 +8,14 @@ pipeline {
     stages {
         stage('Checkout SCM') {
             steps {
-                git credentialsId: 'github-pat', url: 'https://github.com/dhivyasubbu06/CI-CD-optimization-project.git'
+                git branch: 'main',
+                    credentialsId: 'github-pat',
+                    url: 'https://github.com/dhivyasubbu06/CI-CD-optimization-project.git'
             }
         }
 
         stage('Setup Python Environment') {
             steps {
-                // Initialize Conda for the shell
                 sh '''
                 eval "$(conda shell.bash hook)"
                 conda activate $CONDA_ENV
@@ -29,7 +30,6 @@ pipeline {
                 sh '''
                 eval "$(conda shell.bash hook)"
                 conda activate $CONDA_ENV
-                # Add your model training script here
                 python train_model.py
                 '''
             }
@@ -40,7 +40,6 @@ pipeline {
                 sh '''
                 eval "$(conda shell.bash hook)"
                 conda activate $CONDA_ENV
-                # Add your prediction script here
                 python predict_queue.py
                 '''
             }
