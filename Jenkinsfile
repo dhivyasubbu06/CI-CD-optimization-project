@@ -12,19 +12,19 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat 'pip install -r requirements.txt'
+                sh 'pip3 install -r requirements.txt'
             }
         }
 
         stage('Train Model') {
             steps {
-                bat 'python src/train_model.py'
+                sh 'python3 src/train_model.py'
             }
         }
 
         stage('Predict Queue') {
             steps {
-                bat 'python src/predict_queue.py'
+                sh 'python3 src/predict_queue.py'
             }
         }
     }
