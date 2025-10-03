@@ -2,23 +2,24 @@ pipeline {
     agent any
 
     environment {
-        VENV_DIR = "venv"
+        CONDA_ENV = "cicd"
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                git branch: 'main', url: 'https://github.com/dhivyasubbu06/CI-CD-optimization-project.git', credentialsId: 'github-pat'
+                git credentialsId: 'github-pat', url: 'https://github.com/dhivyasubbu06/CI-CD-optimization-project.git'
             }
         }
 
         stage('Setup Python Environment') {
             steps {
+                // Initialize Conda for the shell
                 sh '''
-                    python3 -m venv $VENV_DIR
-                    source $VENV_DIR/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
+                eval "$(conda shell.bash hook)"
+                conda activate $CONDA_ENV
+                python --version
+                pip --version
                 '''
             }
         }
@@ -26,8 +27,10 @@ pipeline {
         stage('Train Model') {
             steps {
                 sh '''
-                    source $VENV_DIR/bin/activate
-                    python src/train_model.py
+                eval "$(conda shell.bash hook)"
+                conda activate $CONDA_ENV
+                # Add your model training script here
+                python train_model.py
                 '''
             }
         }
@@ -35,8 +38,10 @@ pipeline {
         stage('Predict Queue') {
             steps {
                 sh '''
-                    source $VENV_DIR/bin/activate
-                    python src/predict_queue.py
+                eval "$(conda shell.bash hook)"
+                conda activate $CONDA_ENV
+                # Add your prediction script here
+                python predict_queue.py
                 '''
             }
         }
@@ -44,10 +49,10 @@ pipeline {
 
     post {
         success {
-            echo "Pipeline completed successfully!"
+            echo 'Pipeline completed successfully!'
         }
         failure {
-            echo "Pipeline failed. Check logs for errors."
+            echo 'Pipeline failed. Check logs for errors.'
         }
     }
 }
